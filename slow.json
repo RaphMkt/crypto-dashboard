@@ -1,1 +1,28 @@
-{"updated": null, "m2": null, "trends": {}}
+{
+ "updated": "2026-10-07T00:06Z",
+ "m2": null,
+ "m2_error": "The read operation timed out",
+ "trends": {
+  "crypto": {
+   "error": "Retry.__init__() got an unexpected keyword argument 'method_whitelist'"
+  },
+  "bitcoin": {
+   "error": "Retry.__init__() got an unexpected keyword argument 'method_whitelist'"
+  },
+  "solana": {
+   "error": "Retry.__init__() got an unexpected keyword argument 'method_whitelist'"
+  },
+  "Ethereum": {
+   "error": "Retry.__init__() got an unexpected keyword argument 'method_whitelist'"
+  },
+  "QUANT crypto": {
+   "error": "Retry.__init__() got an unexpected keyword argument 'method_whitelist'"
+  },
+  "Hyperliquid": {
+   "error": "Retry.__init__() got an unexpected keyword argument 'method_whitelist'"
+  },
+  "altcoins": {
+   "error": "Retry.__init__() got an unexpected keyword argument 'method_whitelist'"
+  }
+ }
+}
