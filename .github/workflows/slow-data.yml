@@ -2,7 +2,9 @@ name: Update slow data
  
 on:
   schedule:
-    - cron: "15 20 * * *"   # every day at 20:15 UTC, early morning in Sydney
+    - cron: "15 20 * * *"   # early morning in Sydney
+    - cron: "15 4 * * *"    # early afternoon in Sydney (retries anything that failed)
+    - cron: "15 12 * * *"   # late evening in Sydney
   workflow_dispatch:         # adds a "Run workflow" button for manual runs
  
 permissions:
@@ -11,6 +13,7 @@ permissions:
 jobs:
   update:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
