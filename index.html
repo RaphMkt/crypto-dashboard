@@ -1,0 +1,315 @@
+
+Index · HTML
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Crypto dashboard</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧭</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EDF1F4; --panel:#FFFFFF; --ink:#172331; --muted:#5E6E7E; --line:#D5DDE4;
+  --bull:#12805C; --bear:#B8432F; --flat:#A07A12; --soft:#F5F7F9;
+  --head:"Sora", "Segoe UI", system-ui, sans-serif; --body:"Source Sans 3", "Segoe UI", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){ --bg:#0E1620; --panel:#16212D; --ink:#E4EBF2; --muted:#94A3B3; --line:#2A3846;
+    --bull:#3DBB8C; --bear:#E2735E; --flat:#D6AE45; --soft:#1C2937; }
+}
+:root[data-theme="dark"]{ --bg:#0E1620; --panel:#16212D; --ink:#E4EBF2; --muted:#94A3B3; --line:#2A3846;
+  --bull:#3DBB8C; --bear:#E2735E; --flat:#D6AE45; --soft:#1C2937; }
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 var(--body)}
+body{padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+a{color:inherit}
+a:focus-visible,button:focus-visible,tr:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+.wrap{max-width:1180px;margin:0 auto;padding:20px 16px 48px}
+header{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
+h1{font:700 1.6rem/1.1 var(--head);margin:0;letter-spacing:-.01em}
+h2{font:600 1.05rem/1.2 var(--head);margin:0 0 12px}
+.meta{color:var(--muted);font-size:.9rem}
+button{font:600 .85rem var(--body);background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:6px 12px;cursor:pointer}
+section{margin-top:28px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:18px}
+ 
+/* hero: the score tape */
+.hero{display:grid;grid-template-columns:auto 1fr;gap:20px 28px;align-items:center;margin-top:18px}
+.big{font:700 4.4rem/1 var(--head);letter-spacing:-.03em}
+.verdict{font:600 1rem var(--head);margin-top:4px}
+.tape{position:relative;height:18px;border-radius:9px;
+  background:linear-gradient(90deg,var(--bear) 0%,var(--flat) 50%,var(--bull) 100%);opacity:.9}
+.tape .mark{position:absolute;top:-7px;width:4px;height:32px;margin-left:-2px;background:var(--ink);border-radius:2px;
+  transition:left .8s cubic-bezier(.2,.8,.2,1)}
+.scale{display:flex;justify-content:space-between;color:var(--muted);font-size:.8rem;margin-top:6px}
+.groups{grid-column:1/-1;display:grid;grid-template-columns:repeat(6,1fr);gap:8px}
+.grp{border-top:3px solid var(--line);padding-top:6px;font-size:.85rem;color:var(--muted)}
+.grp b{display:block;font:600 1.2rem var(--head);color:var(--ink)}
+ 
+/* coins */
+.coins{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.coin .top{display:flex;justify-content:space-between;align-items:baseline}
+.coin .nm{font:600 1.05rem var(--head)}
+.coin .sc{font:700 2rem var(--head)}
+.coin .px{color:var(--muted);font-size:.9rem;margin:2px 0 10px}
+.mini{height:6px;border-radius:3px;background:var(--line);position:relative;overflow:hidden}
+.mini i{position:absolute;left:0;top:0;bottom:0;border-radius:3px}
+.chg{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-top:10px;font-size:.85rem;text-align:center}
+.chg span{display:block;color:var(--muted);font-size:.75rem}
+.up{color:var(--bull)} .dn{color:var(--bear)} .fl{color:var(--flat)}
+ 
+/* indicator matrix */
+.scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse;min-width:760px}
+th,td{text-align:left;padding:9px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font:600 .8rem var(--head);color:var(--muted)}
+th.c,td.c{text-align:center;width:64px}
+tr.sec td{background:var(--soft);font:600 .9rem var(--head);padding-top:12px}
+tr.sec td span{color:var(--muted);font-weight:400}
+tr.row{cursor:pointer}
+tr.row:hover td{background:var(--soft)}
+.ind{font-weight:600}
+.eff{display:block;color:var(--muted);font-size:.85rem;font-weight:400;max-width:46ch}
+.rd{font-size:.9rem;max-width:30ch}
+.chip{display:inline-block;min-width:34px;padding:2px 6px;border-radius:5px;font:600 .85rem var(--head);color:#fff}
+.chip.na{background:transparent;color:var(--muted);font-weight:400}
+tr.detail td{background:var(--soft);font-size:.88rem;color:var(--muted)}
+tr.detail[hidden]{display:none}
+.detail dl{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;margin:0}
+.detail dt{font-weight:600;color:var(--ink)}
+ 
+/* news */
+.two{display:grid;grid-template-columns:1.1fr 1fr;gap:16px}
+.other{border-bottom:1px solid var(--line);padding:10px 0}
+.other:last-child{border-bottom:0}
+.other .h{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}
+.other .h b{font:600 1rem var(--head)}
+.tag{font-size:.75rem;border:1px solid var(--line);border-radius:4px;padding:1px 6px;color:var(--muted)}
+ul.news{list-style:none;margin:0;padding:0}
+ul.news li{padding:7px 0;border-bottom:1px solid var(--line);font-size:.92rem}
+ul.news li:last-child{border-bottom:0}
+ul.news small{color:var(--muted)}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;vertical-align:1px}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.tabs button[aria-selected="true"]{background:var(--ink);color:var(--panel);border-color:var(--ink)}
+.coinnews{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.spark{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.spark p{grid-column:1/-1}
+.spark div{font-size:.85rem;color:var(--muted)}
+.spark svg{display:block;width:100%;height:40px}
+.msg{padding:14px;border-left:4px solid var(--bear);background:var(--panel)}
+footer{margin-top:32px;color:var(--muted);font-size:.85rem;max-width:80ch}
+ 
+@media (max-width:900px){
+  .coins,.coinnews{grid-template-columns:repeat(2,1fr)}
+  .groups{grid-template-columns:repeat(3,1fr)}
+  .two{grid-template-columns:1fr}
+}
+@media (max-width:520px){
+  .hero{grid-template-columns:1fr}
+  .big{font-size:3.4rem}
+  .coins,.coinnews{grid-template-columns:1fr}
+  .groups{grid-template-columns:repeat(2,1fr)}
+}
+@media (prefers-reduced-motion:reduce){ .tape .mark{transition:none} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Crypto dashboard</h1>
+    <div class="meta"><span id="stamp">Loading data</span> &nbsp; <button id="refresh" type="button">Refresh</button></div>
+  </header>
+ 
+  <div id="error"></div>
+ 
+  <div class="hero" id="hero" aria-live="polite">
+    <div>
+      <div class="big" id="gscore">..</div>
+      <div class="verdict" id="gverdict">Global score</div>
+    </div>
+    <div>
+      <div class="tape" role="img" aria-label="Global score on a scale from bearish to bullish"><div class="mark" id="gmark" style="left:50%"></div></div>
+      <div class="scale"><span>0 bearish</span><span>50 neutral</span><span>100 bullish</span></div>
+    </div>
+    <div class="groups" id="groups"></div>
+  </div>
+ 
+  <section>
+    <h2>Tracked coins</h2>
+    <div class="coins" id="coins"></div>
+  </section>
+ 
+  <section>
+    <h2>Indicators and scores</h2>
+    <p class="meta" style="margin-top:-6px">Each indicator scores from −2 (pushes prices down) to +2 (pushes prices up). A dot means the market reading applies to that coin. Tap a row for the coin level readings.</p>
+    <div class="panel scroll"><table id="matrix" aria-label="Indicator scores"></table></div>
+  </section>
+ 
+  <section class="two">
+    <div class="panel">
+      <h2>Other cryptos in the news</h2>
+      <div id="others"><p class="meta">Waiting for data</p></div>
+    </div>
+    <div class="panel">
+      <h2>Headlines by theme</h2>
+      <div class="tabs" id="tabs" role="tablist"></div>
+      <ul class="news" id="feed"></ul>
+    </div>
+  </section>
+ 
+  <section>
+    <h2>Latest news on tracked coins</h2>
+    <div class="coinnews" id="coinnews"></div>
+  </section>
+ 
+  <section>
+    <h2>Search interest, last 12 months</h2>
+    <div class="panel"><div class="spark" id="spark"><p class="meta">Updated daily by GitHub Actions</p></div></div>
+  </section>
+ 
+  <footer>
+    Scores are mechanical signals built from public data (CoinGecko, Hyperliquid, OKX, Alternative.me, Yahoo Finance, New York Fed, FRED, Google Trends, Wikipedia, crypto news RSS feeds from CoinDesk, Cointelegraph, Decrypt, The Block, CryptoSlate and BBC World, and OKX listing announcements). News scores use a simple word list, so treat them as a pointer to read the headline, not a verdict. Not financial advice.
+  </footer>
+</div>
+ 
+<script>
+// ===================== CONFIG =====================
+const WORKER_URL = "https://crypto-data.rmaffaires.workers.dev"; // your Cloudflare Worker, no trailing slash
+const REFRESH_MINUTES = 10;
+const SYMS = ["BTC", "HYPE", "QNT", "LINK"];
+const FEED_TABS = [["regulation","Regulation"],["etf","ETF"],["whales","Whales"],["listings","Listings"],
+  ["hacks","Hacks"],["contracts","Partnerships"],["famous","Famous people"],["geo","Geopolitics"]];
+ 
+// ===================== HELPERS =====================
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+function scoreColour(s){ return s == null ? css("--muted") : s >= 60 ? css("--bull") : s <= 40 ? css("--bear") : css("--flat"); }
+function verdict(s){ return s == null ? "No data" : s >= 70 ? "Bullish" : s >= 60 ? "Leaning bullish" : s > 40 ? "Neutral" : s > 30 ? "Leaning bearish" : "Bearish"; }
+function chip(o){
+  if (!o || o.score == null) return '<span class="chip na">n/a</span>';
+  const s = o.score, bg = s > 0 ? css("--bull") : s < 0 ? css("--bear") : css("--flat");
+  const op = Math.abs(s) === 2 || s === 0 ? 1 : .72;
+  return `<span class="chip" style="background:${bg};opacity:${op}" title="${esc(o.value)}${o.note ? " | " + esc(o.note) : ""}">${s > 0 ? "+" + s : s < 0 ? "−" + Math.abs(s) : "0"}</span>`;
+}
+function pctCell(v){
+  if (v == null) return '<b class="fl">n/a</b>';
+  const cls = v > 0 ? "up" : v < 0 ? "dn" : "fl";
+  return `<b class="${cls}">${v > 0 ? "+" : v < 0 ? "−" : ""}${Math.abs(v).toFixed(Math.abs(v) >= 10 ? 0 : 1)}%</b>`;
+}
+function price(v){ if (v == null) return "n/a"; return "$" + (v >= 1000 ? v.toLocaleString("en-AU",{maximumFractionDigits:0}) : v >= 1 ? v.toFixed(2) : v.toPrecision(3)); }
+function ago(d){ const t = Date.parse(d); if (!t) return ""; const h = (Date.now() - t) / 36e5; return h < 1 ? "just now" : h < 24 ? Math.round(h) + "h ago" : Math.round(h / 24) + "d ago"; }
+function toneDot(t){ const c = t > 0 ? css("--bull") : t < 0 ? css("--bear") : css("--line"); return `<span class="dot" style="background:${c}"></span>`; }
+ 
+// ===================== RENDER =====================
+let DATA = null, activeTab = "regulation";
+ 
+function render(d){
+  DATA = d;
+  const g = d.global || {};
+  $("gscore").textContent = g.score ?? "n/a";
+  $("gscore").style.color = scoreColour(g.score);
+  $("gverdict").textContent = verdict(g.score) + " overall";
+  $("gmark").style.left = (g.score ?? 50) + "%";
+  $("groups").innerHTML = Object.entries(g.groups || {}).map(([k, v]) =>
+    `<div class="grp" style="border-top-color:${scoreColour(v)}"><b>${v ?? "n/a"}</b>${esc(k)}</div>`).join("");
+ 
+  $("coins").innerHTML = SYMS.map(s => {
+    const c = (d.coins || {})[s] || {};
+    return `<div class="panel coin">
+      <div class="top"><span class="nm">${esc(c.name || s)} <span class="meta">${s}</span></span>
+        <span class="sc" style="color:${scoreColour(c.score)}">${c.score ?? "n/a"}</span></div>
+      <div class="px">${price(c.price)}${c.rank ? " &nbsp; rank " + c.rank : ""} &nbsp; ${verdict(c.score)}</div>
+      <div class="mini"><i style="width:${c.score ?? 0}%;background:${scoreColour(c.score)}"></i></div>
+      <div class="chg"><div><span>1 day</span>${pctCell(c.ch24)}</div><div><span>7 days</span>${pctCell(c.ch7)}</div>
+        <div><span>1 month</span>${pctCell(c.ch30)}</div><div><span>1 year</span>${pctCell(c.ch1y)}</div></div>
+    </div>`;
+  }).join("");
+ 
+  // indicator matrix
+  let html = `<thead><tr><th>Indicator</th><th>Reading</th><th class="c">Market</th>${SYMS.map(s => `<th class="c">${s}</th>`).join("")}</tr></thead><tbody>`;
+  let group = null;
+  (d.indicators || []).forEach((i, n) => {
+    if (i.group !== group) {
+      group = i.group;
+      const gs = (g.groups || {})[group];
+      html += `<tr class="sec"><td colspan="${3 + SYMS.length}">${esc(group)} <span>&nbsp; score ${gs ?? "n/a"}</span></td></tr>`;
+    }
+    const reading = i.market ? i.market.value : "Coin specific, tap for detail";
+    html += `<tr class="row" tabindex="0" data-n="${n}" aria-expanded="false">
+      <td><span class="ind">${esc(i.name)}</span><span class="eff">${esc(i.effect)}</span></td>
+      <td class="rd">${esc(reading)}${i.market && i.market.note ? `<span class="eff">${esc(i.market.note)}</span>` : ""}</td>
+      <td class="c">${chip(i.market)}</td>${SYMS.map(s => `<td class="c">${i.coins[s] ? chip(i.coins[s]) : '<span class="chip na" title="Market reading applies">·</span>'}</td>`).join("")}</tr>
+      <tr class="detail" id="det${n}" hidden><td colspan="${3 + SYMS.length}"><dl>${
+        SYMS.map(s => i.coins[s] ? `<dt>${s}</dt><dd>${esc(i.coins[s].value)}${i.coins[s].note ? " | " + esc(i.coins[s].note) : ""}</dd>` : "").join("")
+        || "<dt>All</dt><dd>Market wide reading applies to every coin</dd>"}<dt>Weight</dt><dd>${i.weight}</dd></dl></td></tr>`;
+  });
+  $("matrix").innerHTML = html + "</tbody>";
+  $("matrix").querySelectorAll("tr.row").forEach(r => {
+    const toggle = () => { const det = $("det" + r.dataset.n); det.hidden = !det.hidden; r.setAttribute("aria-expanded", String(!det.hidden)); };
+    r.addEventListener("click", toggle);
+    r.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggle(); } });
+  });
+ 
+  // other cryptos
+  const others = d.others || [];
+  $("others").innerHTML = others.length ? others.map(o => `<div class="other">
+      <div class="h"><b>${esc(o.name)}</b><span class="meta">${esc(o.symbol)}${o.rank ? " &nbsp; rank " + o.rank : ""}</span>
+      ${[...new Set(o.items.map(x => x.tag))].map(t => `<span class="tag">${esc(t)}</span>`).join("")}</div>
+      <ul class="news">${o.items.slice(0, 2).map(x => `<li><a href="${esc(x.link)}" target="_blank" rel="noopener">${esc(x.title)}</a> <small>${ago(x.date)}</small></li>`).join("")}</ul>
+    </div>`).join("") : '<p class="meta">No other coin stands out in this week\'s ETF, whale, listing or regulation news.</p>';
+ 
+  // tabs
+  $("tabs").innerHTML = FEED_TABS.map(([k, l]) => `<button type="button" role="tab" data-k="${k}" aria-selected="${k === activeTab}">${l}</button>`).join("");
+  $("tabs").querySelectorAll("button").forEach(b => b.onclick = () => { activeTab = b.dataset.k; render(DATA); });
+  const f = (d.feeds || {})[activeTab] || [];
+  $("feed").innerHTML = f.length ? f.map(x => `<li>${toneDot(x.tone)}<a href="${esc(x.link)}" target="_blank" rel="noopener">${esc(x.title)}</a> <small>${esc(x.source || "")} ${ago(x.date)}</small></li>`).join("")
+    : '<li class="meta">No headlines returned for this theme.</li>';
+ 
+  // coin news
+  $("coinnews").innerHTML = SYMS.map(s => {
+    const c = (d.coins || {})[s] || {};
+    const h = c.headlines || [];
+    return `<div class="panel"><h2>${esc(c.name || s)}</h2><ul class="news">${h.length ? h.map(x =>
+      `<li>${toneDot(x.tone)}<a href="${esc(x.link)}" target="_blank" rel="noopener">${esc(x.title)}</a> <small>${ago(x.date)}</small></li>`).join("")
+      : '<li class="meta">No recent headlines</li>'}</ul></div>`;
+  }).join("");
+ 
+  // trends sparklines
+  const tr = d.trendsSeries || {};
+  const keys = Object.keys(tr).filter(k => tr[k] && tr[k].series);
+  $("spark").innerHTML = keys.length ? keys.map(k => {
+    const s = tr[k].series, mx = Math.max(...s, 1), w = 150, h = 40;
+    const pts = s.map((v, i) => `${(i / (s.length - 1) * w).toFixed(1)},${(h - v / mx * (h - 4) - 2).toFixed(1)}`).join(" ");
+    return `<div><svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" aria-hidden="true"><polyline fill="none" stroke="${scoreColour(tr[k].ratio >= 1.25 ? 70 : tr[k].ratio < 0.8 ? 30 : 50)}" stroke-width="2" points="${pts}"/></svg>
+      ${esc(k)} &nbsp; ${tr[k].ratio != null ? tr[k].ratio.toFixed(2) + "x average" : ""}${tr[k].stale ? " (stale)" : ""}</div>`;
+  }).join("") : '<p class="meta">No Google Trends data yet. It appears after the first GitHub Actions run; Wikipedia pageviews cover attention in the meantime.</p>';
+ 
+  const t = new Date(d.updated);
+  $("stamp").textContent = "Updated " + t.toLocaleString("en-AU", { dateStyle: "medium", timeStyle: "short" });
+}
+ 
+async function load(force){
+  $("error").innerHTML = "";
+  try {
+    const r = await fetch(WORKER_URL + "/all" + (force ? "?nocache=1" : ""), { cache: "no-store" });
+    if (!r.ok) throw new Error("HTTP " + r.status);
+    const d = await r.json();
+    if (d.error) throw new Error(d.error);
+    render(d);
+  } catch (e) {
+    $("error").innerHTML = `<p class="msg">Could not load data from the worker (${esc(e.message)}). Check that WORKER_URL in index.html matches your Cloudflare worker, then open <a href="${WORKER_URL}/health">${WORKER_URL}/health</a> to see which source failed.</p>`;
+    $("stamp").textContent = "Data unavailable";
+  }
+}
+$("refresh").onclick = () => load(true);
+load(false);
+setInterval(() => load(false), REFRESH_MINUTES * 60000);
+</script>
+</body>
+</html>
+ 
