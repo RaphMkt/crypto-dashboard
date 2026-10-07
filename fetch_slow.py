@@ -40,33 +40,57 @@ def fetch_m2():
  
  
 def fetch_trends(previous):
+    """One keyword per request, so small keywords such as "QUANT crypto" keep their own 0 to 100 scale.
+    Google often answers automated requests with 429 (too many requests): each keyword gets up to
+    4 attempts with growing pauses, and a keyword fetched successfully in the last 3 days is skipped."""
+    import random
     from pytrends.request import TrendReq
  
-    py = TrendReq(hl="en-US", tz=0, retries=2, backoff_factor=2)
     out = {}
+    now = dt.datetime.utcnow()
     for kw in KEYWORDS:
-        try:
-            py.build_payload([kw], timeframe="today 12-m", geo="")
-            df = py.interest_over_time()
-            s = df[kw].astype(float)
-            avg12 = s.mean()
-            last4 = s.tail(4).mean()
-            out[kw] = {
-                "latest": float(s.iloc[-1]),
-                "last4w": round(last4, 1),
-                "avg12m": round(avg12, 1),
-                "ratio": round(last4 / avg12, 2) if avg12 else None,
-                "series": [int(x) for x in s.tolist()],
-                "stale": False,
-            }
-        except Exception as e:  # keep yesterday's value rather than lose the indicator
-            prev = previous.get(kw)
-            if prev:
-                prev["stale"] = True
-                out[kw] = prev
-            else:
-                out[kw] = {"error": str(e)[:200]}
-        time.sleep(10)
+        prev = previous.get(kw) or {}
+        fetched = prev.get("fetched")
+        if fetched and prev.get("series") and not prev.get("stale"):
+            age = now - dt.datetime.strptime(fetched, "%Y-%m-%dT%H:%MZ")
+            if age < dt.timedelta(days=3):
+                out[kw] = prev  # still fresh, no need to ask Google again
+                continue
+        result, last_error = None, ""
+        for attempt in range(4):
+            try:
+                py = TrendReq(hl="en-US", tz=0, timeout=(10, 30))  # new session each attempt
+                py.build_payload([kw], timeframe="today 12-m", geo="")
+                df = py.interest_over_time()
+                if df.empty:
+                    raise ValueError("empty response")
+                s = df[kw].astype(float)
+                avg12 = s.mean()
+                last4 = s.tail(4).mean()
+                result = {
+                    "latest": float(s.iloc[-1]),
+                    "last4w": round(last4, 1),
+                    "avg12m": round(avg12, 1),
+                    "ratio": round(last4 / avg12, 2) if avg12 else None,
+                    "series": [int(x) for x in s.tolist()],
+                    "stale": False,
+                    "fetched": now.strftime("%Y-%m-%dT%H:%MZ"),
+                }
+                break
+            except Exception as e:
+                last_error = str(e)[:200]
+                wait = 30 * (attempt + 1) + random.uniform(0, 15)
+                print(f"{kw}: attempt {attempt + 1} failed ({last_error}), waiting {wait:.0f}s")
+                time.sleep(wait)
+        if result:
+            out[kw] = result
+            print(f"{kw}: ok, ratio {result['ratio']}")
+        elif prev.get("series"):
+            prev["stale"] = True
+            out[kw] = prev
+        else:
+            out[kw] = {"error": last_error}
+        time.sleep(random.uniform(20, 40))
     return out
  
  
