@@ -1,0 +1,28 @@
+name: Update slow data
+ 
+on:
+  schedule:
+    - cron: "15 20 * * *"   # every day at 20:15 UTC, early morning in Sydney
+  workflow_dispatch:         # adds a "Run workflow" button for manual runs
+ 
+permissions:
+  contents: write
+ 
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install pytrends pandas
+      - run: python fetch_slow.py
+      - name: Commit slow.json
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@users.noreply.github.com"
+          git add slow.json
+          git diff --staged --quiet || git commit -m "Update slow data"
+          git push
+ 
