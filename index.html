@@ -1,5 +1,3 @@
-
-Index · HTML
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -45,7 +43,7 @@ section{margin-top:28px}
 .tape .mark{position:absolute;top:-7px;width:4px;height:32px;margin-left:-2px;background:var(--ink);border-radius:2px;
   transition:left .8s cubic-bezier(.2,.8,.2,1)}
 .scale{display:flex;justify-content:space-between;color:var(--muted);font-size:.8rem;margin-top:6px}
-.groups{grid-column:1/-1;display:grid;grid-template-columns:repeat(6,1fr);gap:8px}
+.groups{grid-column:1/-1;display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px}
 .grp{border-top:3px solid var(--line);padding-top:6px;font-size:.85rem;color:var(--muted)}
 .grp b{display:block;font:600 1.2rem var(--head);color:var(--ink)}
  
@@ -101,18 +99,35 @@ ul.news small{color:var(--muted)}
 .spark div{font-size:.85rem;color:var(--muted)}
 .spark svg{display:block;width:100%;height:40px}
 .msg{padding:14px;border-left:4px solid var(--bear);background:var(--panel)}
+/* RSI */
+.rsi-top{display:grid;grid-template-columns:1.2fr 1fr 1.4fr;gap:16px;margin-bottom:16px}
+.rsi-top .lab{font-size:.8rem;color:var(--muted);margin-bottom:4px}
+.rsi-top .val{font:700 2rem var(--head)}
+.zone{position:relative;height:12px;border-radius:6px;margin-top:10px;
+  background:linear-gradient(90deg,var(--bull) 0 30%,var(--line) 30% 70%,var(--bear) 70% 100%)}
+.zone i{position:absolute;top:-5px;width:4px;height:22px;margin-left:-2px;background:var(--ink);border-radius:2px}
+.obos i{display:block;height:100%}
+.obos{display:flex;height:12px;border-radius:6px;overflow:hidden;margin-top:10px;background:var(--line)}
+.hist{display:grid;grid-template-columns:repeat(3,1fr);gap:6px 10px;font-size:.85rem;color:var(--muted)}
+.hist b{display:block;font:600 1.05rem var(--head);color:var(--ink)}
+#rsiPlot svg{display:block;width:100%;height:auto}
+.rsitab{min-width:640px}
+.rsitab th{cursor:pointer;user-select:none}
+.rsitab td.r{font:600 .85rem var(--head);text-align:center}
+.rsitab tr.trk td{background:var(--soft)}
+.find{font:400 .9rem var(--body);padding:6px 10px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink);min-width:180px}
+.tablehead{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin:16px 0 8px}
+@media (max-width:900px){ .rsi-top{grid-template-columns:1fr} }
 footer{margin-top:32px;color:var(--muted);font-size:.85rem;max-width:80ch}
  
 @media (max-width:900px){
   .coins,.coinnews{grid-template-columns:repeat(2,1fr)}
-  .groups{grid-template-columns:repeat(3,1fr)}
   .two{grid-template-columns:1fr}
 }
 @media (max-width:520px){
   .hero{grid-template-columns:1fr}
   .big{font-size:3.4rem}
   .coins,.coinnews{grid-template-columns:1fr}
-  .groups{grid-template-columns:repeat(2,1fr)}
 }
 @media (prefers-reduced-motion:reduce){ .tape .mark{transition:none} }
 </style>
@@ -147,6 +162,28 @@ footer{margin-top:32px;color:var(--muted);font-size:.85rem;max-width:80ch}
     <h2>Indicators and scores</h2>
     <p class="meta" style="margin-top:-6px">Each indicator scores from −2 (pushes prices down) to +2 (pushes prices up). A dot means the market reading applies to that coin. Tap a row for the coin level readings.</p>
     <div class="panel scroll"><table id="matrix" aria-label="Indicator scores"></table></div>
+  </section>
+ 
+  <section>
+    <h2>Market momentum: relative strength index (RSI 14)</h2>
+    <p class="meta" style="margin-top:-6px">Part of the demand picture: about 100 of the largest cryptos, updated hourly. Above 70 is overbought, below 30 oversold.</p>
+    <div class="panel" id="rsiPanel">
+      <div class="tabs" id="rsiTabs" role="tablist"></div>
+      <div class="rsi-top">
+        <div><div class="lab">Average crypto RSI</div><div class="val" id="rsiAvg">..</div>
+          <div class="zone" aria-hidden="true"><i id="rsiAvgMark" style="left:50%"></i></div>
+          <div class="scale"><span>Oversold 30</span><span>Overbought 70</span></div></div>
+        <div><div class="lab">Overbought vs oversold</div><div class="val" id="rsiObos">..</div>
+          <div class="obos" id="rsiObosBar" aria-hidden="true"></div></div>
+        <div><div class="lab">Average RSI history</div><div class="hist" id="rsiHist"></div></div>
+      </div>
+      <div id="rsiPlot"></div>
+      <div class="tablehead"><b style="font:600 1rem var(--head)">All coins</b>
+        <input class="find" id="rsiFind" type="search" placeholder="Filter by name or symbol" aria-label="Filter coins"></div>
+      <div class="scroll"><table class="rsitab" id="rsiTable"></table></div>
+      <button type="button" id="rsiMore" style="margin-top:10px" hidden></button>
+      <p class="meta" id="rsiStamp" style="margin-top:10px"></p>
+    </div>
   </section>
  
   <section class="two">
@@ -306,7 +343,82 @@ async function load(force){
     $("stamp").textContent = "Data unavailable";
   }
 }
-$("refresh").onclick = () => load(true);
+// ===================== RSI =====================
+const RSI_TF = [["h1","1 hour"],["d1","1 day"],["w1","1 week"],["m1","1 month"]];
+let RSI = null, rsiTf = "d1", rsiSort = { key: "rank", dir: 1 }, rsiAll = false;
+function rsiColour(v){ return v == null ? css("--muted") : v >= 70 ? css("--bear") : v <= 30 ? css("--bull") : v >= 60 ? css("--flat") : css("--ink"); }
+function rsiLabel(v){ return v == null ? "" : v >= 70 ? "Overbought" : v <= 30 ? "Oversold" : v >= 60 ? "Strong" : v <= 40 ? "Weak" : "Neutral"; }
+function renderRsi(){
+  const r = RSI; if (!r || !r.coins || !r.coins.length) {
+    $("rsiPlot").innerHTML = '<p class="meta">No RSI data yet. It appears after the first run of the "Update RSI data" job in GitHub Actions.</p>'; return; }
+  $("rsiTabs").innerHTML = RSI_TF.map(([k, l]) => `<button type="button" role="tab" data-k="${k}" aria-selected="${k === rsiTf}">${l}</button>`).join("");
+  $("rsiTabs").querySelectorAll("button").forEach(b => b.onclick = () => { rsiTf = b.dataset.k; renderRsi(); });
+  const sm = (r.summary || {})[rsiTf] || {};
+  $("rsiAvg").textContent = sm.avg ?? "n/a";
+  $("rsiAvg").style.color = rsiColour(sm.avg);
+  $("rsiAvgMark").style.left = (sm.avg ?? 50) + "%";
+  const ob = sm.overbought || 0, os = sm.oversold || 0, n = sm.count || 1;
+  $("rsiObos").innerHTML = `<span style="color:${css("--bear")}">${ob}</span> <span class="meta">vs</span> <span style="color:${css("--bull")}">${os}</span>`;
+  $("rsiObosBar").innerHTML = `<i style="width:${ob / n * 100}%;background:${css("--bear")}"></i><i style="flex:1"></i><i style="width:${os / n * 100}%;background:${css("--bull")}"></i>`;
+  const h = r.history || {}, hp = (r.summary || {}).h1 || {};
+  const cell = (l, v) => `<div>${l}<b style="color:${rsiColour(v)}">${v ?? "n/a"}</b></div>`;
+  $("rsiHist").innerHTML = cell("Now (daily)", h.now) + cell("1 hour ago (hourly)", hp.prev) + cell("Yesterday", h.d1) +
+    cell("Last week", h.w1) + cell("Last month", h.m1) + cell("Last year", h.y1);
+ 
+  // scatter: coins in market cap order, RSI on the vertical axis
+  const pts = r.coins.map((c, i) => ({ c, i, v: c[rsiTf] })).filter(p => p.v != null);
+  const W = 1000, H = 300, L = 34, R = 8, T = 10, B = 22, n2 = Math.max(r.coins.length - 1, 1);
+  const x = i => L + i / n2 * (W - L - R), y = v => T + (100 - v) / 100 * (H - T - B);
+  let svg = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="RSI of each coin, ${RSI_TF.find(t => t[0] === rsiTf)[1]} timeframe">`;
+  svg += `<rect x="${L}" y="${y(100)}" width="${W - L - R}" height="${y(70) - y(100)}" fill="${css("--bear")}" opacity=".10"/>`;
+  svg += `<rect x="${L}" y="${y(30)}" width="${W - L - R}" height="${y(0) - y(30)}" fill="${css("--bull")}" opacity=".10"/>`;
+  [30, 50, 70].forEach(v => svg += `<line x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}" stroke="${css("--line")}" stroke-dasharray="${v === 50 ? "0" : "4 4"}"/><text x="${L - 6}" y="${y(v) + 4}" font-size="11" text-anchor="end" fill="${css("--muted")}">${v}</text>`);
+  svg += `<text x="${W - R}" y="${y(100) + 14}" font-size="11" text-anchor="end" fill="${css("--bear")}">Overbought</text>`;
+  svg += `<text x="${W - R}" y="${y(0) - 6}" font-size="11" text-anchor="end" fill="${css("--bull")}">Oversold</text>`;
+  svg += `<text x="${L}" y="${H - 4}" font-size="11" fill="${css("--muted")}">Largest coins on the left</text>`;
+  pts.forEach(p => {
+    const big = p.c.tracked || p.v >= 75 || p.v <= 25;
+    svg += `<circle cx="${x(p.i).toFixed(1)}" cy="${y(p.v).toFixed(1)}" r="${p.c.tracked ? 6 : 4}" fill="${rsiColour(p.v)}" opacity="${p.c.tracked ? 1 : .75}"${p.c.tracked ? ` stroke="${css("--ink")}" stroke-width="1.5"` : ""}><title>${esc(p.c.symbol)}: ${p.v}</title></circle>`;
+    if (big) svg += `<text x="${(x(p.i) + 7).toFixed(1)}" y="${(y(p.v) + 4).toFixed(1)}" font-size="11" font-weight="${p.c.tracked ? 700 : 400}" fill="${css("--ink")}">${esc(p.c.symbol)}</text>`;
+  });
+  $("rsiPlot").innerHTML = svg + "</svg>";
+  renderRsiTable();
+  $("rsiStamp").textContent = `RSI data updated ${new Date(r.updated.replace("Z", ":00Z")).toLocaleString("en-AU", { dateStyle: "medium", timeStyle: "short" })}. Weekly and monthly RSI use candles built from daily prices; coins listed recently show n/a until they have 15 periods of history.`;
+}
+function renderRsiTable(){
+  const q = ($("rsiFind").value || "").trim().toLowerCase();
+  const rows = RSI.coins.map((c, i) => ({ ...c, rank: i + 1 }))
+    .filter(c => !q || c.symbol.toLowerCase().includes(q) || String(c.name).toLowerCase().includes(q));
+  const k = rsiSort.key;
+  rows.sort((a, b) => { const va = a[k], vb = b[k]; if (va == null) return 1; if (vb == null) return -1;
+    return (typeof va === "string" ? va.localeCompare(vb) : va - vb) * rsiSort.dir; });
+  const cols = [["rank","#"],["name","Name"],["price","Price"],["ch24","24h %"],["h1","RSI 1h"],["d1","RSI 1d"],["w1","RSI 1w"],["m1","RSI 1M"]];
+  const arrow = c => rsiSort.key === c ? (rsiSort.dir > 0 ? " ▲" : " ▼") : "";
+  let html = `<thead><tr>${cols.map(([c, l]) => `<th data-k="${c}" class="${c.length === 2 && c !== "#" ? "c" : ""}" aria-sort="${rsiSort.key === c ? (rsiSort.dir > 0 ? "ascending" : "descending") : "none"}">${l}${arrow(c)}</th>`).join("")}</tr></thead><tbody>`;
+  html += rows.map(c => `<tr class="${c.tracked ? "trk" : ""}"><td>${c.rank}</td><td><b>${esc(c.symbol)}</b> <span class="meta">${esc(c.name)}</span></td>
+    <td>${price(c.price)}</td><td>${pctCell(c.ch24)}</td>${["h1","d1","w1","m1"].map(t =>
+      `<td class="r" style="color:${rsiColour(c[t])}" title="${rsiLabel(c[t])}">${c[t] ?? "n/a"}</td>`).join("")}</tr>`).join("");
+  const shown = rsiAll || q ? rows : rows.slice(0, 20);
+  html = html.replace(/<tbody>[\s\S]*$/, "<tbody>") + shown.map(c => `<tr class="${c.tracked ? "trk" : ""}"><td>${c.rank}</td><td><b>${esc(c.symbol)}</b> <span class="meta">${esc(c.name)}</span></td>
+    <td>${price(c.price)}</td><td>${pctCell(c.ch24)}</td>${["h1","d1","w1","m1"].map(t =>
+      `<td class="r" style="color:${rsiColour(c[t])}" title="${rsiLabel(c[t])}">${c[t] ?? "n/a"}</td>`).join("")}</tr>`).join("");
+  $("rsiTable").innerHTML = html + "</tbody>";
+  $("rsiMore").hidden = !!q || rows.length <= 20;
+  $("rsiMore").textContent = rsiAll ? "Show top 20 only" : `Show all ${rows.length} coins`;
+  $("rsiTable").querySelectorAll("th").forEach(th => th.onclick = () => {
+    const key = th.dataset.k; rsiSort = { key, dir: rsiSort.key === key ? -rsiSort.dir : (key === "rank" || key === "name" ? 1 : -1) }; renderRsiTable(); });
+}
+async function loadRsi(){
+  try { const r = await fetch("rsi.json?t=" + Date.now(), { cache: "no-store" }); if (!r.ok) throw new Error(r.status); RSI = await r.json(); }
+  catch (e) { RSI = null; }
+  renderRsi();
+}
+$("rsiFind").addEventListener("input", () => RSI && renderRsiTable());
+$("rsiMore").onclick = () => { rsiAll = !rsiAll; renderRsiTable(); };
+loadRsi();
+setInterval(loadRsi, REFRESH_MINUTES * 60000);
+ 
+$("refresh").onclick = () => { load(true); loadRsi(); };
 load(false);
 setInterval(() => load(false), REFRESH_MINUTES * 60000);
 </script>
