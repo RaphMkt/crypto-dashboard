@@ -61,10 +61,10 @@ section{margin-top:28px}
  
 /* indicator matrix */
 .scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
-table{width:100%;border-collapse:collapse;min-width:760px}
+table{width:100%;border-collapse:collapse;min-width:1000px}
 th,td{text-align:left;padding:9px 8px;border-bottom:1px solid var(--line);vertical-align:top}
 th{font:600 .8rem var(--head);color:var(--muted)}
-th.c,td.c{text-align:center;width:64px}
+th.c,td.c{text-align:center;width:56px}
 tr.sec td{background:var(--soft);font:600 .9rem var(--head);padding-top:12px}
 tr.sec td span{color:var(--muted);font-weight:400}
 tr.row{cursor:pointer}
@@ -209,7 +209,7 @@ footer{margin-top:32px;color:var(--muted);font-size:.85rem;max-width:80ch}
   </section>
  
   <footer>
-    Scores are mechanical signals built from public data (CoinGecko, Hyperliquid, OKX, Alternative.me, Yahoo Finance, New York Fed, FRED, Google Trends, Wikipedia, crypto news RSS feeds from CoinDesk, Cointelegraph, Decrypt, The Block, CryptoSlate and BBC World, and OKX listing announcements). News scores use a simple word list, so treat them as a pointer to read the headline, not a verdict. Not financial advice.
+    Scores are mechanical signals built from public data (CoinLore, Hyperliquid, OKX, Kraken, Alternative.me, Yahoo Finance, New York Fed, FRED, Google Trends, Wikipedia, crypto news RSS feeds from CoinDesk, Cointelegraph, Decrypt, The Block, CryptoSlate and BBC World, and OKX listing announcements). News scores use a simple word list, so treat them as a pointer to read the headline, not a verdict. Not financial advice.
   </footer>
 </div>
  
@@ -217,7 +217,7 @@ footer{margin-top:32px;color:var(--muted);font-size:.85rem;max-width:80ch}
 // ===================== CONFIG =====================
 const WORKER_URL = "https://crypto-data.rmaffaires.workers.dev"; // your Cloudflare Worker, no trailing slash
 const REFRESH_MINUTES = 10;
-const SYMS = ["BTC", "HYPE", "QNT", "LINK"];
+const SYMS = ["BTC", "ETH", "SOL", "LINK", "HYPE", "TAO", "AAVE", "QNT"];
 const FEED_TABS = [["regulation","Regulation"],["etf","ETF"],["whales","Whales"],["listings","Listings"],
   ["hacks","Hacks"],["contracts","Partnerships"],["famous","Famous people"],["geo","Geopolitics"]];
  
