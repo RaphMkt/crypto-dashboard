@@ -16,7 +16,7 @@ import time
 import urllib.request
  
 TOP_N = 100                      # how many coins to show
-TRACKED = ["BTC", "HYPE", "QNT", "LINK"]
+TRACKED = ["BTC", "ETH", "SOL", "LINK", "HYPE", "TAO", "AAVE", "QNT"]
 PERIOD = 14
 HL = "https://api.hyperliquid.xyz/info"
 UA = {"User-Agent": "Mozilla/5.0 crypto-dashboard", "Content-Type": "application/json"}
