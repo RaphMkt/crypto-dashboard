@@ -12,9 +12,13 @@ import datetime as dt
 import io
 import json
 import time
+import urllib.parse
 import urllib.request
  
-KEYWORDS = ["crypto", "bitcoin", "solana", "Ethereum", "QUANT crypto", "Hyperliquid", "altcoins"]
+KEYWORDS = ["crypto", "bitcoin", "altcoins", "Ethereum", "solana", "Chainlink", "Hyperliquid", "Bittensor", "Aave", "QUANT crypto"]
+# Wikipedia articles for the attention indicator ("market" = general crypto interest)
+WIKI = {"market": "Cryptocurrency", "BTC": "Bitcoin", "ETH": "Ethereum", "SOL": "Solana_(blockchain_platform)",
+        "LINK": "Chainlink_(blockchain)", "HYPE": "Hyperliquid", "TAO": "Bittensor", "AAVE": "Aave"}
 OUT = "slow.json"
  
  
@@ -94,6 +98,26 @@ def fetch_trends(previous):
     return out
  
  
+def fetch_wiki():
+    """Average daily views over the last 7 days vs the previous 90 days, per article."""
+    end = dt.date.today() - dt.timedelta(days=1)
+    start = end - dt.timedelta(days=97)
+    out = {}
+    for key, article in WIKI.items():
+        url = ("https://wikimedia.org/api/rest_v1/metrics/pageviews/per-article/en.wikipedia.org/all-access/user/"
+               f"{urllib.parse.quote(article)}/daily/{start:%Y%m%d}/{end:%Y%m%d}")
+        try:
+            req = urllib.request.Request(url, headers={"User-Agent": "crypto-dashboard/2.0 (personal dashboard; github.com/raphmkt)"})
+            items = json.loads(urllib.request.urlopen(req, timeout=30).read().decode())["items"]
+            views = [i["views"] for i in items]
+            recent, base = sum(views[-7:]) / 7, sum(views[:-7]) / max(len(views) - 7, 1)
+            out[key] = {"article": article, "ratio": round(recent / base, 2) if base else None}
+        except Exception as e:
+            out[key] = {"article": article, "error": str(e)[:120]}
+        time.sleep(1)
+    return out
+ 
+ 
 def main():
     prev = load_previous()
     data = {"updated": dt.datetime.utcnow().strftime("%Y-%m-%dT%H:%MZ")}
@@ -102,6 +126,8 @@ def main():
     except Exception as e:
         data["m2"] = prev.get("m2")
         data["m2_error"] = str(e)[:200]
+    data["wiki"] = fetch_wiki()
+    print("wiki:", {k: v.get("ratio") for k, v in data["wiki"].items()})
     try:
         data["trends"] = fetch_trends(prev.get("trends", {}))
     except Exception as e:
