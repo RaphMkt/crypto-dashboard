@@ -1,5 +1,5 @@
 {
- "updated": "2026-10-12T21:17Z",
+ "updated": "2026-10-13T01:59Z",
  "m2": null,
  "m2_error": "The read operation timed out",
  "wiki": {
@@ -29,11 +29,11 @@
   },
   "TAO": {
    "article": "Bittensor",
-   "ratio": 0.35
+   "ratio": 0.34
   },
   "AAVE": {
    "article": "Aave",
-   "ratio": 0.94
+   "ratio": 0.93
   }
  },
  "trends": {
