@@ -1,5 +1,5 @@
 {
- "updated": "2026-10-16T22:48Z",
+ "updated": "2026-10-17T08:35Z",
  "m2": null,
  "m2_error": "The read operation timed out",
  "wiki": {
@@ -9,19 +9,19 @@
   },
   "BTC": {
    "article": "Bitcoin",
-   "ratio": 1.35
+   "ratio": 1.36
   },
   "ETH": {
    "article": "Ethereum",
-   "ratio": 0.97
+   "ratio": 0.98
   },
   "SOL": {
    "article": "Solana_(blockchain_platform)",
-   "ratio": 1.08
+   "ratio": 1.09
   },
   "LINK": {
    "article": "Chainlink_(blockchain)",
-   "ratio": 1.18
+   "ratio": 1.17
   },
   "HYPE": {
    "article": "Hyperliquid",
