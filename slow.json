@@ -1,5 +1,5 @@
 {
- "updated": "2026-10-17T22:17Z",
+ "updated": "2026-10-18T08:52Z",
  "m2": null,
  "m2_error": "The read operation timed out",
  "wiki": {
@@ -17,7 +17,7 @@
   },
   "SOL": {
    "article": "Solana_(blockchain_platform)",
-   "ratio": 1.09
+   "ratio": 1.1
   },
   "LINK": {
    "article": "Chainlink_(blockchain)",
@@ -29,7 +29,7 @@
   },
   "TAO": {
    "article": "Bittensor",
-   "ratio": 0.34
+   "ratio": 0.36
   },
   "AAVE": {
    "article": "Aave",
