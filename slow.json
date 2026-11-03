@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-02T21:43Z",
+ "updated": "2026-11-03T02:15Z",
  "m2": {
   "date": "2026-09-01",
   "level_bn": 23413.9,
@@ -12,7 +12,7 @@
   },
   "BTC": {
    "article": "Bitcoin",
-   "ratio": 1.57
+   "ratio": 1.56
   },
   "ETH": {
    "article": "Ethereum",
