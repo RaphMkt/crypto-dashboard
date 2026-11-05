@@ -1,10 +1,11 @@
 {
- "updated": "2026-11-05T12:24Z",
+ "updated": "2026-11-05T19:59Z",
  "m2": {
   "date": "2026-09-01",
   "level_bn": 23413.9,
   "yoy": 5.71
  },
+ "m2_error": "The read operation timed out",
  "wiki": {
   "market": {
    "article": "Cryptocurrency",
