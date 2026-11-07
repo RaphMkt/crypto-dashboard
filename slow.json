@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-07T00:04Z",
+ "updated": "2026-11-07T11:05Z",
  "m2": {
   "date": "2026-09-01",
   "level_bn": 23413.9,
@@ -9,23 +9,23 @@
  "wiki": {
   "market": {
    "article": "Cryptocurrency",
-   "ratio": 1.55
+   "ratio": 1.28
   },
   "BTC": {
    "article": "Bitcoin",
-   "ratio": 1.69
+   "ratio": 1.57
   },
   "ETH": {
    "article": "Ethereum",
-   "ratio": 1.62
+   "ratio": 1.49
   },
   "SOL": {
    "article": "Solana_(blockchain_platform)",
-   "ratio": 0.87
+   "ratio": 0.86
   },
   "LINK": {
    "article": "Chainlink_(blockchain)",
-   "ratio": 0.28
+   "ratio": 0.31
   },
   "HYPE": {
    "article": "Hyperliquid",
@@ -37,7 +37,7 @@
   },
   "AAVE": {
    "article": "Aave",
-   "ratio": 1.51
+   "ratio": 1.04
   }
  },
  "trends": {
