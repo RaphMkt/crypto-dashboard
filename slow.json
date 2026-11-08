@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-07T23:37Z",
+ "updated": "2026-11-08T11:18Z",
  "m2": {
   "date": "2026-09-01",
   "level_bn": 23413.9,
@@ -13,7 +13,7 @@
   },
   "BTC": {
    "article": "Bitcoin",
-   "ratio": 1.57
+   "ratio": 1.56
   },
   "ETH": {
    "article": "Ethereum",
@@ -37,7 +37,7 @@
   },
   "AAVE": {
    "article": "Aave",
-   "ratio": 1.04
+   "ratio": 1.03
   }
  },
  "trends": {
