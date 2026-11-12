@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-12T01:53Z",
+ "updated": "2026-11-12T12:44Z",
  "m2": {
   "date": "2026-09-01",
   "level_bn": 23413.9,
@@ -9,19 +9,19 @@
  "wiki": {
   "market": {
    "article": "Cryptocurrency",
-   "ratio": 0.82
+   "ratio": 0.76
   },
   "BTC": {
    "article": "Bitcoin",
-   "ratio": 1.33
+   "ratio": 1.08
   },
   "ETH": {
    "article": "Ethereum",
-   "ratio": 1.09
+   "ratio": 1.03
   },
   "SOL": {
    "article": "Solana_(blockchain_platform)",
-   "ratio": 0.79
+   "ratio": 0.81
   },
   "LINK": {
    "article": "Chainlink_(blockchain)",
