@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-16T12:47Z",
+ "updated": "2026-11-16T22:10Z",
  "m2": {
   "date": "2026-09-01",
   "level_bn": 23413.9,
@@ -9,7 +9,7 @@
  "wiki": {
   "market": {
    "article": "Cryptocurrency",
-   "ratio": 0.8
+   "ratio": 0.81
   },
   "BTC": {
    "article": "Bitcoin",
@@ -21,11 +21,11 @@
   },
   "SOL": {
    "article": "Solana_(blockchain_platform)",
-   "ratio": 0.98
+   "ratio": 0.99
   },
   "LINK": {
    "article": "Chainlink_(blockchain)",
-   "ratio": 0.34
+   "ratio": 0.35
   },
   "HYPE": {
    "article": "Hyperliquid",
