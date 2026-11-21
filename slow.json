@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-20T20:26Z",
+ "updated": "2026-11-21T01:28Z",
  "m2": {
   "date": "2026-09-01",
   "level_bn": 23413.9,
@@ -17,7 +17,7 @@
   },
   "ETH": {
    "article": "Ethereum",
-   "error": "<urlopen error [Errno 101] Network is unreachable>"
+   "ratio": 1.0
   },
   "SOL": {
    "article": "Solana_(blockchain_platform)",
@@ -25,11 +25,11 @@
   },
   "LINK": {
    "article": "Chainlink_(blockchain)",
-   "error": "<urlopen error [Errno 104] Connection reset by peer>"
+   "ratio": 1.09
   },
   "HYPE": {
    "article": "Hyperliquid",
-   "error": "<urlopen error [Errno 104] Connection reset by peer>"
+   "error": "HTTP Error 404: Not Found"
   },
   "TAO": {
    "article": "Bittensor",
