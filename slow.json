@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-21T19:20Z",
+ "updated": "2026-11-22T00:18Z",
  "m2": {
   "date": "2026-09-01",
   "level_bn": 23413.9,
@@ -13,7 +13,7 @@
   },
   "BTC": {
    "article": "Bitcoin",
-   "ratio": 1.33
+   "ratio": 1.32
   },
   "ETH": {
    "article": "Ethereum",
@@ -25,7 +25,7 @@
   },
   "LINK": {
    "article": "Chainlink_(blockchain)",
-   "ratio": 0.97
+   "ratio": 0.99
   },
   "HYPE": {
    "article": "Hyperliquid",
