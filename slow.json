@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-25T14:25Z",
+ "updated": "2026-11-25T21:45Z",
  "m2": {
   "date": "2026-09-01",
   "level_bn": 23413.9,
@@ -9,35 +9,35 @@
  "wiki": {
   "market": {
    "article": "Cryptocurrency",
-   "ratio": 0.93
+   "error": "HTTP Error 429: Too many requests - for unthrottling, contact noc@wikimedia.org to discuss a less disruptive approach (f"
   },
   "BTC": {
    "article": "Bitcoin",
-   "ratio": 1.11
+   "error": "HTTP Error 429: Too many requests - for unthrottling, contact noc@wikimedia.org to discuss a less disruptive approach (f"
   },
   "ETH": {
    "article": "Ethereum",
-   "ratio": 0.97
+   "error": "HTTP Error 429: Too many requests - for unthrottling, contact noc@wikimedia.org to discuss a less disruptive approach (f"
   },
   "SOL": {
    "article": "Solana_(blockchain_platform)",
-   "ratio": 1.0
+   "error": "HTTP Error 429: Too many requests - for unthrottling, contact noc@wikimedia.org to discuss a less disruptive approach (f"
   },
   "LINK": {
    "article": "Chainlink_(blockchain)",
-   "ratio": 0.78
+   "error": "HTTP Error 429: Too many requests - for unthrottling, contact noc@wikimedia.org to discuss a less disruptive approach (f"
   },
   "HYPE": {
    "article": "Hyperliquid",
-   "error": "HTTP Error 404: Not Found"
+   "error": "HTTP Error 429: Too many requests - for unthrottling, contact noc@wikimedia.org to discuss a less disruptive approach (f"
   },
   "TAO": {
    "article": "Bittensor",
-   "ratio": null
+   "error": "HTTP Error 429: Too many requests - for unthrottling, contact noc@wikimedia.org to discuss a less disruptive approach (f"
   },
   "AAVE": {
    "article": "Aave",
-   "ratio": 0.76
+   "error": "HTTP Error 429: Too many requests - for unthrottling, contact noc@wikimedia.org to discuss a less disruptive approach (f"
   }
  },
  "trends": {
